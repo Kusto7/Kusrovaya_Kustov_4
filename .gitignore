@@ -43,6 +43,7 @@ htmlcov/
 .coverage
 .coverage.*
 .cache
+poetry.lock
 nosetests.xml
 coverage.xml
 *.cover
