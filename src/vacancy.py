@@ -22,7 +22,7 @@ class Vacancy:
         except FileNotFoundError:
             pass
 
-    def vacancy_to_save_file(self):
+    def vacancy_to_create(self):
         self.vacancy = {'Профессия': self.name_profession,
                         'Заработная плата': self.salary,
                         'Ссылка на вакансию': self.url,

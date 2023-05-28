@@ -1,14 +1,14 @@
 [tool.poetry]
-name = "kursovaya-kustov"
+name = "kusrovaya-kustov-4"
 version = "0.1.0"
 description = ""
 authors = ["Kusto7 <kirill.kustov21@gmail.com>"]
 readme = "README.md"
-packages = [{include = "kursovaya_kustov"}]
+packages = [{include = "kusrovaya_kustov_4"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
-requests = "^2.31.0"
+langdetect = "^1.0.9"
 
 
 [build-system]

@@ -16,10 +16,24 @@ class Get_service_API(ABC):
 class HeadHunterAPI(Get_service_API):
 
     def get_vacancies(self, name_job=None):
+        user_param_count = int(input("Сколько вакансий загрузить?"))
+        # user_param_town = input("Из какого города загрузить вакансии?").lower
+        # response = requests.get('https://api.hh.ru/areas/').json()
+        # for town in response['objects']:
+        #     if user_param_town == town['title'].lower():
+        #         user_param_town = town['id']
+        #     else:
+        #         continue
+        # if user_param_town is None:
+        #     print('Не удалось найти город, выбираю регион Москва')
+        #     user_param_town = 4
+        # else:
+        #     pass
+        name_job = input('Введите ключевые слова для поиска. Обязательно EN.')
         params = {
             'text': name_job,
             'area': 1,
-            'per_page': 10
+            'per_page': user_param_count
         }
         response = requests.get('https://api.hh.ru/vacancies', params)
         return response.json()
@@ -27,16 +41,38 @@ class HeadHunterAPI(Get_service_API):
 
 class SuperJobAPI(Get_service_API):
 
-    def get_vacancies(self, name_job=None):
+    def get_vacancies(self):
+        headers = {'X-Api-App-Id': SUPERJOB_API_KEY}
+        # while True:
+        #     try:
+        #         user_param_count = int(input("Сколько вакансий загрузить?"))
+        #     except ValueError:
+        #         print("Мне нужно число.")
+        #         continue
+        #     else:
+        #         id_town = user_param_count
+        #         break
+        user_param_count = int(input("Сколько вакансий загрузить?"))
+        # user_param_town = input("Из какого города загрузить вакансии?").lower
+        # response = requests.get('https://api.superjob.ru/2.0/%s' % 'towns/', headers=headers).json()
+        # for town in response['objects']:
+        #     if user_param_town == town['title'].lower():
+        #         user_param_town = town['id']
+        #     else:
+        #         continue
+        # if user_param_town is None:
+        #     print('Не удалось найти город, выбираю регион Москва')
+        #     user_param_town = 4
+        # else:
+        #     pass
+        name_job = input('Введите ключевые слова для поиска. Обязательно EN.')
         params = {
-            'count': 10,
+            'count': user_param_count,
             'town': 4,
             'keyword': name_job
-        }
-        headers = {'X-Api-App-Id': SUPERJOB_API_KEY}
+            }
         response = requests.get('https://api.superjob.ru/2.0/%s' % 'vacancies/', params, headers=headers)
         return response.json()
-
 
 # hh_api = HeadHunterAPI()
 # # superjob_api = SuperJobAPI()
