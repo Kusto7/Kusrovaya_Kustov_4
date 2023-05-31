@@ -8,6 +8,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
+.idea
 build/
 develop-eggs/
 dist/
@@ -43,6 +44,7 @@ htmlcov/
 .coverage
 .coverage.*
 .cache
+poetry.lock
 nosetests.xml
 coverage.xml
 *.cover
