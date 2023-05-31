@@ -1,17 +1,17 @@
-import json
-
 from src.ApiConnect import SuperJobAPI, HeadHunterAPI
 from src.vacancy import Vacancy
 
-ALL_VACANCY = []
+ALL_VACANCY = []  # Глобальная переменная для сохранения всех вакансий с двух сайтов.
 
 
 def add_vacancies_superjob():
+
+    """Функция для создания объектов класса Vacancy от сайта SuperJob.ru"""
+
     superjob_api = SuperJobAPI()
     superjob_vacancies = superjob_api.get_vacancies()
     for info in superjob_vacancies['objects']:
         name_profession = info['profession']
-        # salary = "".join(f"{info['payment_from']} - {info['payment_to']} {info['currency']}.")
         salary = info['payment_from']
         url = info['link']
         requirement = info['candidat']
@@ -21,14 +21,13 @@ def add_vacancies_superjob():
 
 
 def add_vacancies_hh():
+
+    """Функция для создания объектов класса Vacancy от сайта HH.ru"""
+
     hh_api = HeadHunterAPI()
     hh_vacancies = hh_api.get_vacancies()
     for info in hh_vacancies['items']:
         name_profession = info['name']
-        # if info['salary'] is None:
-        #     salary = 0
-        # else:
-        #     salary = "".join(f"{info['salary']['from']} - {info['salary']['to']} {info['salary']['currency']}.")
         if info['salary'] is None:
             salary = 0
         else:
@@ -40,35 +39,10 @@ def add_vacancies_hh():
     return ALL_VACANCY
 
 
-def save_all_vacancy_to_file():
-    Vacancy.file_vacancies_clear()
-    for vacancy in ALL_VACANCY:
-        vacancy.vacancy_to_create()
-    Vacancy.json_file_vacancy()
-
-
-def filter_vacancy(salary, keyword):
-    with open('all_vacancy.json', 'r', encoding='utf-8') as file:
-        data_all_vacancy = json.load(file)
-        del_vacancy = 0
-        while True:
-            for vacancy in data_all_vacancy['AllVacancy']:
-                if vacancy['Заработная плата'] == 'З/П не указана':
-                    continue
-                elif vacancy['Заработная плата'] >= salary:
-                    if keyword in vacancy['Требования к работе']:
-                        info_vacancy = f"\nНазвания вакансии — {vacancy['Профессия']}\n" \
-                                       f"Заработная плата — {vacancy['Заработная плата']}\n" \
-                                       f"Требования — {vacancy['Требования к работе']}\n" \
-                                       f"Ссылка на вакансию: {vacancy['Ссылка на вакансию']}\n"
-                        data_all_vacancy['AllVacancy'].pop(del_vacancy)
-                        return info_vacancy
-                else:
-                    del_vacancy += 1
-                    print('Не нашел подходящую вакансию, давай снизим требования.')
-
-
 def user_interaction():
+
+    """Функция для работы с пользователем"""
+
     print('Привет! Эта программа может показать тебе нужные вакансии \n'
           'Я буду задавать нужные вопросы для отбора вакансий \n'
           'Если готов, нажми Enter')
@@ -91,22 +65,21 @@ def user_interaction():
                 break
             else:
                 print('Проверь написание платформы.')
-        print('Хорошо, загружаю вакансии. Подожди, пожалуйста.')
-        save_all_vacancy_to_file()
+        Vacancy.save_all_vacancy_to_file(ALL_VACANCY)
         print('Теперь давай более детально уточним, что тебе интересно.')
         user_salary = input('Укажи минимальную ЗП, которую ты хочешь. Ничего не указывай, если не важно.')
         user_keyword = input('Укажи любые слова, которые важны для поиска вакансии в требованиях \n'
                              'Например: «SQL», «Django» и т.д.')
         if user_salary == '':
             user_salary = 0
-            print(filter_vacancy(int(user_salary), user_keyword))
+            print(Vacancy.filter_vacancy(int(user_salary), user_keyword))
         else:
-            print(filter_vacancy(int(user_salary), user_keyword))
+            print(Vacancy.filter_vacancy(int(user_salary), user_keyword))
         while True:
             print('\nПоказываю следующую вакансию?')
             user_answer = input('YES/NO').lower()
             if user_answer in ['yes']:
-                print(filter_vacancy(int(user_salary), user_keyword))
+                print(Vacancy.filter_vacancy(int(user_salary), user_keyword))
             else:
                 print('Всего хорошего!')
                 break
