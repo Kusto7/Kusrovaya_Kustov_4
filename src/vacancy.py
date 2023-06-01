@@ -1,4 +1,5 @@
 import json
+import sys
 
 
 class Vacancy:
@@ -14,6 +15,8 @@ class Vacancy:
         if not isinstance(salary, int):
             self.salary = "З/П не указана"
         elif salary == 0:
+            self.salary = "З/П не указана"
+        elif salary < 10000:
             self.salary = "З/П не указана"
         else:
             self.salary = salary
@@ -70,27 +73,34 @@ class Vacancy:
 
     @classmethod
     def filter_vacancy(cls, salary, keyword):
-
         """Метод для фильтрации вакансий в файле"""
 
         with open('all_vacancy.json', 'r', encoding='utf-8') as file:
             data_all_vacancy = json.load(file)
-            while True:
-                for vacancy in data_all_vacancy['AllVacancy']:
-                    if vacancy['Заработная плата'] == 'З/П не указана':
-                        continue
-                    if vacancy['Заработная плата'] >= salary:
-                        if keyword in vacancy['Требования к работе']:
-                            info_vacancy = f"\nНазвания вакансии — {vacancy['Профессия']}\n" \
-                                           f"Заработная плата — {vacancy['Заработная плата']}\n" \
-                                           f"Требования — {vacancy['Требования к работе']}\n" \
-                                           f"Ссылка на вакансию: {vacancy['Ссылка на вакансию']}\n"
-                            data_all_vacancy['AllVacancy'].pop(Vacancy.del_vacancy)
-                            Vacancy.del_vacancy_in_file(data_all_vacancy)
-                            Vacancy.del_vacancy += 1
-                            return info_vacancy
-                        else:
-                            data_all_vacancy['AllVacancy'].pop(Vacancy.del_vacancy)
-                            Vacancy.del_vacancy_in_file(data_all_vacancy)
-                            Vacancy.del_vacancy += 1
-                            print('Не нашел подходящую вакансию, продолжаю искать...')
+            try:
+                while True:
+                    for vacancy in data_all_vacancy['AllVacancy']:
+                        info_vacancy = f"\nНазвания вакансии — {vacancy['Профессия']}\n" \
+                                       f"Заработная плата — {vacancy['Заработная плата']}\n" \
+                                       f"Требования — {vacancy['Требования к работе']}\n" \
+                                       f"Ссылка на вакансию: {vacancy['Ссылка на вакансию']}\n"
+                        try:
+                            if keyword.lower() in vacancy['Требования к работе'].lower():
+                                try:
+                                    if vacancy['Заработная плата'] >= salary:
+                                        data_all_vacancy['AllVacancy'].pop(Vacancy.del_vacancy)
+                                        Vacancy.del_vacancy_in_file(data_all_vacancy)
+                                        Vacancy.del_vacancy += 1
+                                        return info_vacancy
+                                except TypeError:
+                                    print('\nЭта вакансия, которая не попадает под критерий зарплаты.')
+                                    return info_vacancy
+                            else:
+                                data_all_vacancy['AllVacancy'].pop(Vacancy.del_vacancy)
+                                Vacancy.del_vacancy_in_file(data_all_vacancy)
+                                Vacancy.del_vacancy += 1
+                        except AttributeError:
+                            pass
+            except IndexError:
+                print('Не нашёл подходящую вакансию. Попробуй загрузить больше вакансий или снизить требования.')
+                sys.exit()
